@@ -8,15 +8,14 @@
 ARCH ?= arm-rtems5
 
 ##
-## Select your BSP here
-## 
-BSP ?= raspberrypi2
+## Select your BSP here 
+##
+BSP ?= beagleboneblack
 
 ##
 ## paths for the RTEMS tools and RTEMS BSP
 ##
-RTEMS_TOOL_BASE ?= /opt/rtems/5.0.0-m2004
-RTEMS_BSP_BASE ?= /opt/rtems/5.0.0-m2004
+include ../rtems-paths.mak
 
 ##
 ## Compiler paths
@@ -29,20 +28,20 @@ RTEMS_ARCH_LIB2 = $(RTEMS_PREFIX)/$(ARCH)/lib
 ##
 ## Linker flags
 ##
-LDFLAGS ?= -march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard -mtune=cortex-a7
+LDFLAGS ?= -mcpu=cortex-a8 -ffunction-sections -fdata-sections -Wl,--gc-sections
 LDFLAGS += --pipe -B$(RTEMS_ARCH_LIB2) -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems $(WARNINGS) 
 
 ##
 ## Compiler Architecture Switches
 ##
-ARCH_OPTS ?= -march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard -mtune=cortex-a7 -D__ARM__
+ARCH_OPTS ?= -mcpu=cortex-a8 -D__ARM__
 ARCH_OPTS += --pipe -B$(RTEMS_ARCH_LIB2) -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems
 ARCH_OPTS += -DHAVE_DLFCN_H=1 -DHAVE_RTEMS_PCI_H=1
 
 INCLUDE_PATH := -I./config
 
-WARNINGS	= -Wall
-DEBUG_OPTS	 = -g -O2
+WARNINGS = -Wall
+DEBUG_OPTS = -g -O2
 
 ##
 ## define build products
@@ -52,6 +51,8 @@ EXE_TARGET_PRE   = rki.elf.pre
 BINARY_TARGET    = rki.bin
 TAR_IMAGE        = tarfile.o
 LINKSCRIPT       = linkcmds
+
+BEAGLE_UBOOT     = rtems-rki.img
 
 ##
 ## Objects to build
@@ -73,8 +74,13 @@ OBJS += dhrystone_cmd.o
 OBJS += whetstone_cmd.o
 OBJS += benchmarks.o
 
+#
+# Target specific commands
+#
+OBJS += gpio_cmd.o
+
 ##
-## Libraries to link in
+## Libraries to link
 ##
 LIBS = -Wl,-Bstatic -Wl,-Bdynamic -lm -lz
 
@@ -131,11 +137,12 @@ SIZE       = $(ARCH)-size
 RTEMS_SYMS = rtems-syms
 
 ##
-## VPATH
+## VPATH for source files
 ##
 VPATH := ./config
 VPATH += ../../src
 VPATH += ./src
+
 ###############################################################################################
 ##
 ## Build Targets
@@ -145,10 +152,6 @@ VPATH += ./src
 ## The default "make" target is the subsystem object module.
 ##
 default::$(EXE_TARGET)
-
-
-#  Install rule is mission/target specific
-#  install::$(EXE_TARGET)
 
 ##
 ## Compiler rule
@@ -175,18 +178,18 @@ $(TAR_IMAGE)::
 ##
 $(EXE_TARGET): $(OBJS) $(TAR_IMAGE)
 	$(COMPILER) $(DEBUG_FLAGS) $(LDFLAGS) -o $(EXE_TARGET_PRE) $(OBJS) $(TAR_IMAGE) $(LIBS)
-	$(RTEMS_SYMS) -v -e -c "-march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard -mtune=cortex-a7 -ffunction-sections -fdata-sections -Wl,--gc-sections" -o dl-sym.o $(EXE_TARGET_PRE)
+	$(RTEMS_SYMS) -v -e -c "-mcpu=cortex-a8 -ffunction-sections -fdata-sections -Wl,--gc-sections" -o dl-sym.o $(EXE_TARGET_PRE)
 	$(COMPILER) $(DEBUG_FLAGS) $(LDFLAGS) -o $(EXE_TARGET) $(OBJS) $(TAR_IMAGE) $(LIBS) dl-sym.o
 	$(OBJCOPY) -O binary --strip-all $(EXE_TARGET) $(BINARY_TARGET)
 	$(SIZE) $(EXE_TARGET)
-#	gzip -9 $(BINARY_TARGET)
-#	mkimage -A arm -O linux -T kernel -a 0x80000000 -e 0x80000000 -n RTEMS -d $(BINARY_TARGET).gz $(BEAGLE_UBOOT)	
+	gzip -9 $(BINARY_TARGET)
+	mkimage -A arm -O linux -T kernel -a 0x80000000 -e 0x80000000 -n RTEMS -d $(BINARY_TARGET).gz $(BEAGLE_UBOOT)	
 
 ##
 ## Make clean rule
 ##
 clean::
-	-$(RM) $(OBJS) $(EXE_TARGET) $(EXE_TARGET_PRE) $(BINARY_TARGET) 
+	-$(RM) $(OBJS) $(EXE_TARGET) $(EXE_TARGET_PRE) $(BINARY_TARGET) $(BINARY_TARGET).gz
 	-$(RM) $(TAR_IMAGE) tarfile
 	-$(RM) *.lis
 	-$(RM) *.img

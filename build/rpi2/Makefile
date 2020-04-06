@@ -3,21 +3,23 @@
 ##
 
 ##
-## Architecture
+## Architecture Definition
 ##
 ARCH ?= arm-rtems5
 
 ##
-## Select your BSP here 
-##
-BSP  ?= xilinx_zynq_a9_qemu
+## Select your BSP here
+## 
+BSP ?= raspberrypi2
 
 ##
 ## paths for the RTEMS tools and RTEMS BSP
 ##
-RTEMS_TOOL_BASE ?= /home/alan/rtems/tools/5
-RTEMS_BSP_BASE ?= /home/alan/rtems/bsps/5
+include ../rtems-paths.mak
 
+##
+## Compiler paths
+##
 PREFIX         = $(RTEMS_TOOL_BASE)
 RTEMS_PREFIX   = $(RTEMS_BSP_BASE)
 RTEMS_ARCH_LIB = $(RTEMS_PREFIX)/$(ARCH)/$(BSP)/lib
@@ -26,16 +28,16 @@ RTEMS_ARCH_LIB2 = $(RTEMS_PREFIX)/$(ARCH)/lib
 ##
 ## Linker flags
 ##
-LDFLAGS ?= -march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard -mtune=cortex-a9 
-LDFLAGS += -ffunction-sections -fdata-sections -Wl,--gc-sections
+LDFLAGS ?= -march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard -mtune=cortex-a7
 LDFLAGS += --pipe -B$(RTEMS_ARCH_LIB2) -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems $(WARNINGS) 
 
 ##
 ## Compiler Architecture Switches
 ##
-ARCH_OPTS ?= -march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard -mtune=cortex-a9 -D__ARM__  
+ARCH_OPTS ?= -march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard -mtune=cortex-a7 -D__ARM__
 ARCH_OPTS += --pipe -B$(RTEMS_ARCH_LIB2) -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems
 ARCH_OPTS += -DHAVE_DLFCN_H=1 -DHAVE_RTEMS_PCI_H=1
+
 INCLUDE_PATH := -I./config
 
 WARNINGS	= -Wall
@@ -49,8 +51,6 @@ EXE_TARGET_PRE   = rki.elf.pre
 BINARY_TARGET    = rki.bin
 TAR_IMAGE        = tarfile.o
 LINKSCRIPT       = linkcmds
-
-BEAGLE_UBOOT     = rtems-rki.img
 
 ##
 ## Objects to build
@@ -71,10 +71,6 @@ OBJS += hello_cmd.o
 OBJS += dhrystone_cmd.o
 OBJS += whetstone_cmd.o
 OBJS += benchmarks.o
-
-#
-# Target specific commands
-#
 
 ##
 ## Libraries to link in
@@ -149,6 +145,10 @@ VPATH += ./src
 ##
 default::$(EXE_TARGET)
 
+
+#  Install rule is mission/target specific
+#  install::$(EXE_TARGET)
+
 ##
 ## Compiler rule
 ##
@@ -174,18 +174,18 @@ $(TAR_IMAGE)::
 ##
 $(EXE_TARGET): $(OBJS) $(TAR_IMAGE)
 	$(COMPILER) $(DEBUG_FLAGS) $(LDFLAGS) -o $(EXE_TARGET_PRE) $(OBJS) $(TAR_IMAGE) $(LIBS)
-	$(RTEMS_SYMS) -v -e -c "-march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard -mtune=cortex-a9 -ffunction-sections -fdata-sections -Wl,--gc-sections" -o dl-sym.o $(EXE_TARGET_PRE)
+	$(RTEMS_SYMS) -v -e -c "-march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard -mtune=cortex-a7 -ffunction-sections -fdata-sections -Wl,--gc-sections" -o dl-sym.o $(EXE_TARGET_PRE)
 	$(COMPILER) $(DEBUG_FLAGS) $(LDFLAGS) -o $(EXE_TARGET) $(OBJS) $(TAR_IMAGE) $(LIBS) dl-sym.o
 	$(OBJCOPY) -O binary --strip-all $(EXE_TARGET) $(BINARY_TARGET)
 	$(SIZE) $(EXE_TARGET)
-	gzip -9 $(BINARY_TARGET)
-	mkimage -A arm -O linux -T kernel -a 0x80000000 -e 0x80000000 -n RTEMS -d $(BINARY_TARGET).gz $(BEAGLE_UBOOT)	
+#	gzip -9 $(BINARY_TARGET)
+#	mkimage -A arm -O linux -T kernel -a 0x80000000 -e 0x80000000 -n RTEMS -d $(BINARY_TARGET).gz $(BEAGLE_UBOOT)	
 
 ##
 ## Make clean rule
 ##
 clean::
-	-$(RM) $(OBJS) $(EXE_TARGET) $(EXE_TARGET_PRE) $(BINARY_TARGET) $(BINARY_TARGET).gz
+	-$(RM) $(OBJS) $(EXE_TARGET) $(EXE_TARGET_PRE) $(BINARY_TARGET) 
 	-$(RM) $(TAR_IMAGE) tarfile
 	-$(RM) *.lis
 	-$(RM) *.img

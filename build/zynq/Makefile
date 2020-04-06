@@ -3,24 +3,20 @@
 ##
 
 ##
-## Architecture Definition
+## Architecture
 ##
 ARCH ?= arm-rtems5
 
 ##
 ## Select your BSP here 
 ##
-BSP ?= beagleboneblack
+BSP  ?= xilinx_zynq_a9_qemu
 
 ##
 ## paths for the RTEMS tools and RTEMS BSP
 ##
-RTEMS_TOOL_BASE ?= /home/alan/rtems/tools/5
-RTEMS_BSP_BASE ?= /home/alan/rtems/bsps/5
+include ../rtems-paths.mak
 
-##
-## Compiler paths
-##
 PREFIX         = $(RTEMS_TOOL_BASE)
 RTEMS_PREFIX   = $(RTEMS_BSP_BASE)
 RTEMS_ARCH_LIB = $(RTEMS_PREFIX)/$(ARCH)/$(BSP)/lib
@@ -29,20 +25,20 @@ RTEMS_ARCH_LIB2 = $(RTEMS_PREFIX)/$(ARCH)/lib
 ##
 ## Linker flags
 ##
-LDFLAGS ?= -mcpu=cortex-a8 -ffunction-sections -fdata-sections -Wl,--gc-sections
+LDFLAGS ?= -march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard -mtune=cortex-a9 
+LDFLAGS += -ffunction-sections -fdata-sections -Wl,--gc-sections
 LDFLAGS += --pipe -B$(RTEMS_ARCH_LIB2) -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems $(WARNINGS) 
 
 ##
 ## Compiler Architecture Switches
 ##
-ARCH_OPTS ?= -mcpu=cortex-a8 -D__ARM__
+ARCH_OPTS ?= -march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard -mtune=cortex-a9 -D__ARM__  
 ARCH_OPTS += --pipe -B$(RTEMS_ARCH_LIB2) -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems
 ARCH_OPTS += -DHAVE_DLFCN_H=1 -DHAVE_RTEMS_PCI_H=1
-
 INCLUDE_PATH := -I./config
 
-WARNINGS = -Wall
-DEBUG_OPTS = -g -O2
+WARNINGS	= -Wall
+DEBUG_OPTS	 = -g -O2
 
 ##
 ## define build products
@@ -78,10 +74,9 @@ OBJS += benchmarks.o
 #
 # Target specific commands
 #
-OBJS += gpio_cmd.o
 
 ##
-## Libraries to link
+## Libraries to link in
 ##
 LIBS = -Wl,-Bstatic -Wl,-Bdynamic -lm -lz
 
@@ -138,12 +133,11 @@ SIZE       = $(ARCH)-size
 RTEMS_SYMS = rtems-syms
 
 ##
-## VPATH for source files
+## VPATH
 ##
 VPATH := ./config
 VPATH += ../../src
 VPATH += ./src
-
 ###############################################################################################
 ##
 ## Build Targets
@@ -179,7 +173,7 @@ $(TAR_IMAGE)::
 ##
 $(EXE_TARGET): $(OBJS) $(TAR_IMAGE)
 	$(COMPILER) $(DEBUG_FLAGS) $(LDFLAGS) -o $(EXE_TARGET_PRE) $(OBJS) $(TAR_IMAGE) $(LIBS)
-	$(RTEMS_SYMS) -v -e -c "-mcpu=cortex-a8 -ffunction-sections -fdata-sections -Wl,--gc-sections" -o dl-sym.o $(EXE_TARGET_PRE)
+	$(RTEMS_SYMS) -v -e -c "-march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard -mtune=cortex-a9 -ffunction-sections -fdata-sections -Wl,--gc-sections" -o dl-sym.o $(EXE_TARGET_PRE)
 	$(COMPILER) $(DEBUG_FLAGS) $(LDFLAGS) -o $(EXE_TARGET) $(OBJS) $(TAR_IMAGE) $(LIBS) dl-sym.o
 	$(OBJCOPY) -O binary --strip-all $(EXE_TARGET) $(BINARY_TARGET)
 	$(SIZE) $(EXE_TARGET)

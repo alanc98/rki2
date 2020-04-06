@@ -3,14 +3,14 @@
 ##
 
 ##
-## Architecture
+## Architecture Definition
 ##
-ARCH ?= arm-rtems5
+ARCH ?= sparc-rtems5
 
 ##
-## Select your BSP here 
-##
-BSP ?= beagleboneblack
+## Select your BSP here
+## 
+BSP ?= leon3
 
 ##
 ## paths for the RTEMS tools and RTEMS BSP
@@ -28,13 +28,13 @@ RTEMS_ARCH_LIB2 = $(RTEMS_PREFIX)/$(ARCH)/lib
 ##
 ## Linker flags
 ##
-LDFLAGS ?= -mcpu=cortex-a8 -ffunction-sections -fdata-sections -Wl,--gc-sections
+LDFLAGS ?= -mcpu=leon3 
 LDFLAGS += --pipe -B$(RTEMS_ARCH_LIB2) -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems $(WARNINGS) 
 
 ##
 ## Compiler Architecture Switches
 ##
-ARCH_OPTS ?= -mcpu=cortex-a8 -D__ARM__  
+ARCH_OPTS ?= -mcpu=leon3 -D__SPARC__  
 ARCH_OPTS += --pipe -B$(RTEMS_ARCH_LIB2) -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems
 ARCH_OPTS += -DHAVE_DLFCN_H=1 -DHAVE_RTEMS_PCI_H=1
 
@@ -52,12 +52,10 @@ BINARY_TARGET    = rki.bin
 TAR_IMAGE        = tarfile.o
 LINKSCRIPT       = linkcmds
 
-BEAGLE_UBOOT     = rtems-rki.img
-
 ##
 ## Objects to build
 ##
-OBJS = rki_init.o rtems_libbsd.o rtems_net_svc.o rki_shell_cmds.o rki_dl_cmds.o filesys.o deps.o
+OBJS = rki_init.o rki_shell_cmds.o rki_dl_cmds.o filesys.o deps.o
 OBJS += target_shell_cmds.o
 
 ##
@@ -74,15 +72,10 @@ OBJS += dhrystone_cmd.o
 OBJS += whetstone_cmd.o
 OBJS += benchmarks.o
 
-#
-# Target specific commands
-#
-OBJS += gpio_cmd.o
-
 ##
-## Libraries to link
+## Libraries to link in
 ##
-LIBS = -Wl,-Bstatic -lbsd -Wl,-Bdynamic -lftpd -ltelnetd -lbsd -lm -lz
+LIBS = -Wl,-Bstatic -Wl,-Bdynamic -lm -lz
 
 ##
 ## Optional libs depending on the features needed
@@ -142,7 +135,6 @@ RTEMS_SYMS = rtems-syms
 VPATH := ./config
 VPATH += ../../src
 VPATH += ./src
-
 ###############################################################################################
 ##
 ## Build Targets
@@ -152,6 +144,10 @@ VPATH += ./src
 ## The default "make" target is the subsystem object module.
 ##
 default::$(EXE_TARGET)
+
+
+#  Install rule is mission/target specific
+#  install::$(EXE_TARGET)
 
 ##
 ## Compiler rule
@@ -178,18 +174,18 @@ $(TAR_IMAGE)::
 ##
 $(EXE_TARGET): $(OBJS) $(TAR_IMAGE)
 	$(COMPILER) $(DEBUG_FLAGS) $(LDFLAGS) -o $(EXE_TARGET_PRE) $(OBJS) $(TAR_IMAGE) $(LIBS)
-	$(RTEMS_SYMS) -v -e -c "-mcpu=cortex-a8 -ffunction-sections -fdata-sections -Wl,--gc-sections" -o dl-sym.o $(EXE_TARGET_PRE)
+	$(RTEMS_SYMS) -v -e -c "-mcpu=leon3 -ffunction-sections -fdata-sections -Wl,--gc-sections" -o dl-sym.o $(EXE_TARGET_PRE)
 	$(COMPILER) $(DEBUG_FLAGS) $(LDFLAGS) -o $(EXE_TARGET) $(OBJS) $(TAR_IMAGE) $(LIBS) dl-sym.o
 	$(OBJCOPY) -O binary --strip-all $(EXE_TARGET) $(BINARY_TARGET)
 	$(SIZE) $(EXE_TARGET)
-	gzip -9 $(BINARY_TARGET)
-	mkimage -A arm -O linux -T kernel -a 0x80000000 -e 0x80000000 -n RTEMS -d $(BINARY_TARGET).gz $(BEAGLE_UBOOT)	
+#	gzip -9 $(BINARY_TARGET)
+#	mkimage -A arm -O linux -T kernel -a 0x80000000 -e 0x80000000 -n RTEMS -d $(BINARY_TARGET).gz $(BEAGLE_UBOOT)	
 
 ##
 ## Make clean rule
 ##
 clean::
-	-$(RM) $(OBJS) $(EXE_TARGET) $(EXE_TARGET_PRE) $(BINARY_TARGET) $(BINARY_TARGET).gz
+	-$(RM) $(OBJS) $(EXE_TARGET) $(EXE_TARGET_PRE) $(BINARY_TARGET) 
 	-$(RM) $(TAR_IMAGE) tarfile
 	-$(RM) *.lis
 	-$(RM) *.img

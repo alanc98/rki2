@@ -15,8 +15,7 @@ BSP ?= raspberrypi
 ##
 ## paths for the RTEMS tools and RTEMS BSP
 ##
-RTEMS_TOOL_BASE ?= /home/alan/rtems/tools/5
-RTEMS_BSP_BASE ?= /home/alan/rtems/bsps/5
+include ../rtems-paths.mak
 
 ##
 ## Compiler paths
