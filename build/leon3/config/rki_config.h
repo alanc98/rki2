@@ -30,7 +30,7 @@
 ** Define RAM Disk 0 base address and size
 */
 #define RAM_DISK_0_BASE_ADDR 0x0
-#define RAM_DISK_0_BLOCKS    128 * 1024
+#define RAM_DISK_0_BLOCKS    2 * 1024
 
 /*
 ** Include the TAR file system to initialze IMFS

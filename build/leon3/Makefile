@@ -28,13 +28,13 @@ RTEMS_ARCH_LIB2 = $(RTEMS_PREFIX)/$(ARCH)/lib
 ##
 ## Linker flags
 ##
-LDFLAGS ?= -mcpu=leon3 
+LDFLAGS ?= -mcpu=leon3 -ffunction-sections -fdata-sections
 LDFLAGS += --pipe -B$(RTEMS_ARCH_LIB2) -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems $(WARNINGS) 
 
 ##
 ## Compiler Architecture Switches
 ##
-ARCH_OPTS ?= -mcpu=leon3 -D__SPARC__  
+ARCH_OPTS ?= -mcpu=leon3 -ffunction-sections -fdata-sections -D__SPARC__
 ARCH_OPTS += --pipe -B$(RTEMS_ARCH_LIB2) -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems
 ARCH_OPTS += -DHAVE_DLFCN_H=1 -DHAVE_RTEMS_PCI_H=1
 
