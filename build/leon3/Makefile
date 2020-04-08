@@ -178,8 +178,6 @@ $(EXE_TARGET): $(OBJS) $(TAR_IMAGE)
 	$(COMPILER) $(DEBUG_FLAGS) $(LDFLAGS) -o $(EXE_TARGET) $(OBJS) $(TAR_IMAGE) $(LIBS) dl-sym.o
 	$(OBJCOPY) -O binary --strip-all $(EXE_TARGET) $(BINARY_TARGET)
 	$(SIZE) $(EXE_TARGET)
-#	gzip -9 $(BINARY_TARGET)
-#	mkimage -A arm -O linux -T kernel -a 0x80000000 -e 0x80000000 -n RTEMS -d $(BINARY_TARGET).gz $(BEAGLE_UBOOT)	
 
 ##
 ## Make clean rule
