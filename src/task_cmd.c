@@ -11,8 +11,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <bsp.h>
+
+#define TASK_ATTRIBUTES RTEMS_FLOATING_POINT
+
 
 rtems_id   Task_id[ 5 ];         /* array of task ids */
 rtems_name Task_name[ 5 ];       /* array of task names */
@@ -52,7 +54,7 @@ int task_command( int argc, char *argv[])
 
   status = rtems_task_create(
     Task_name[ 0 ], 1, RTEMS_MINIMUM_STACK_SIZE * 2, RTEMS_DEFAULT_MODES,
-    RTEMS_DEFAULT_ATTRIBUTES, &Task_id[ 0 ]
+    TASK_ATTRIBUTES, &Task_id[ 0 ]
   );
   if ( status != RTEMS_SUCCESSFUL ) 
   {
@@ -61,7 +63,7 @@ int task_command( int argc, char *argv[])
 
   status = rtems_task_create(
     Task_name[ 1 ], 2, RTEMS_MINIMUM_STACK_SIZE * 2, RTEMS_DEFAULT_MODES,
-    RTEMS_DEFAULT_ATTRIBUTES, &Task_id[ 1 ]
+    TASK_ATTRIBUTES, &Task_id[ 1 ]
   );
   if ( status != RTEMS_SUCCESSFUL ) 
   {
@@ -70,7 +72,7 @@ int task_command( int argc, char *argv[])
 
   status = rtems_task_create(
     Task_name[ 2 ], 3, RTEMS_MINIMUM_STACK_SIZE * 2, RTEMS_DEFAULT_MODES,
-    RTEMS_DEFAULT_ATTRIBUTES, &Task_id[ 2 ]
+    TASK_ATTRIBUTES, &Task_id[ 2 ]
   );
   if ( status != RTEMS_SUCCESSFUL ) 
   {
@@ -79,7 +81,7 @@ int task_command( int argc, char *argv[])
 
   status = rtems_task_create(
     Task_name[ 3 ], 4, RTEMS_MINIMUM_STACK_SIZE * 2, RTEMS_DEFAULT_MODES,
-    RTEMS_DEFAULT_ATTRIBUTES, &Task_id[ 3 ]
+    TASK_ATTRIBUTES, &Task_id[ 3 ]
   );
   if ( status != RTEMS_SUCCESSFUL ) 
   {
@@ -88,7 +90,7 @@ int task_command( int argc, char *argv[])
 
   status = rtems_task_create(
     Task_name[ 4 ], 5, RTEMS_MINIMUM_STACK_SIZE * 2, RTEMS_DEFAULT_MODES,
-    RTEMS_DEFAULT_ATTRIBUTES, &Task_id[ 4 ]
+    TASK_ATTRIBUTES, &Task_id[ 4 ]
   );
   if ( status != RTEMS_SUCCESSFUL ) 
   {

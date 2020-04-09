@@ -28,7 +28,7 @@ RTEMS_ARCH_LIB2 = $(RTEMS_PREFIX)/$(ARCH)/lib
 ##
 ## Linker flags
 ##
-LDFLAGS ?= -mcpu=leon3 -ffunction-sections -fdata-sections
+LDFLAGS ?= -mcpu=leon3 -ffunction-sections -fdata-sections -Wl,--gc-sections
 LDFLAGS += --pipe -B$(RTEMS_ARCH_LIB2) -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems $(WARNINGS) 
 
 ##
@@ -75,7 +75,8 @@ OBJS += benchmarks.o
 ##
 ## Libraries to link in
 ##
-LIBS = -Wl,-Bstatic -Wl,-Bdynamic -lm -lz
+# LIBS = -Wl,-Bstatic -Wl,-Bdynamic -lm -lz
+LIBS = -lm
 
 ##
 ## Optional libs depending on the features needed
