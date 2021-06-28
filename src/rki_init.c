@@ -47,10 +47,14 @@ rtems_task Init (rtems_task_argument ignored)
    int status;
 
    printf("\n\n");
+#ifdef RKI_INCLUDE_LIBBSD
    printf("RTEMS Kernel Image With LibBSD Booting\n");
+#else
+   printf("RTEMS Kernel Image Booting\n");
+#endif
+
    printf( "\n\n*** RTEMS Info ***\n" );
-   printf("%s", _Copyright_Notice );
-   printf("%s\n\n", _RTEMS_version );
+   printf("%s\n\n", rtems_version() );
    printf("\n");
    printf(" BSP Ticks Per Second = %d\n",(int)rtems_clock_get_ticks_per_second());
    printf( "*** End RTEMS info ***\n\n" );

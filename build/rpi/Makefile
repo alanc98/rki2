@@ -5,7 +5,7 @@
 ##
 ## Architecture Definition
 ##
-ARCH ?= arm-rtems5
+ARCH ?= arm-rtems6
 
 ##
 ## Select your BSP here
@@ -23,19 +23,20 @@ include ../rtems-paths.mak
 PREFIX         = $(RTEMS_TOOL_BASE)
 RTEMS_PREFIX   = $(RTEMS_BSP_BASE)
 RTEMS_ARCH_LIB = $(RTEMS_PREFIX)/$(ARCH)/$(BSP)/lib
-RTEMS_ARCH_LIB2 = $(RTEMS_PREFIX)/$(ARCH)/lib
 
 ##
 ## Linker flags
 ##
 LDFLAGS ?= -mcpu=arm1176jzf-s 
-LDFLAGS += --pipe -B$(RTEMS_ARCH_LIB2) -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems $(WARNINGS) 
+LDFLAGS += --pipe -B$(RTEMS_ARCH_LIB) -qrtems $(WARNINGS) 
+# LDFLAGS += --pipe -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems $(WARNINGS) 
 
 ##
 ## Compiler Architecture Switches
 ##
 ARCH_OPTS ?= -mcpu=arm1176jzf-s -D__ARM__  
-ARCH_OPTS += --pipe -B$(RTEMS_ARCH_LIB2) -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems
+ARCH_OPTS += --pipe -B$(RTEMS_ARCH_LIB) -qrtems
+# ARCH_OPTS += --pipe -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems
 ARCH_OPTS += -DHAVE_DLFCN_H=1 -DHAVE_RTEMS_PCI_H=1
 
 INCLUDE_PATH := -I./config

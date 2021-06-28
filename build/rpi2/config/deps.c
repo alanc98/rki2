@@ -85,8 +85,6 @@ int tcflush_ptr = (int)&tcflush;
 
 int feof_ptr = (int)&feof;
 
-int bind_ptr = (int)&bind;
-
 int rtems_timer_reset_ptr = (int)&rtems_timer_reset;
 int rtems_timer_fire_after_ptr = (int)&rtems_timer_fire_after;
 int rtems_timer_create_ptr = (int)&rtems_timer_create;

@@ -5,7 +5,7 @@
 ##
 ## Architecture Definition
 ##
-ARCH ?= arm-rtems5
+ARCH ?= arm-rtems6
 
 ##
 ## Select your BSP here
@@ -23,24 +23,25 @@ include ../rtems-paths.mak
 PREFIX         = $(RTEMS_TOOL_BASE)
 RTEMS_PREFIX   = $(RTEMS_BSP_BASE)
 RTEMS_ARCH_LIB = $(RTEMS_PREFIX)/$(ARCH)/$(BSP)/lib
-RTEMS_ARCH_LIB2 = $(RTEMS_PREFIX)/$(ARCH)/lib
 
 ##
 ## Linker flags
 ##
-LDFLAGS ?= -march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard -mtune=cortex-a7
-LDFLAGS += --pipe -B$(RTEMS_ARCH_LIB2) -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems $(WARNINGS) 
+LDFLAGS ?= -march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard -mtune=cortex-a7 
+LDFLAGS += --pipe -B$(RTEMS_ARCH_LIB) -qrtems $(WARNINGS) 
+# LDFLAGS += --pipe -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems $(WARNINGS) 
 
 ##
 ## Compiler Architecture Switches
 ##
-ARCH_OPTS ?= -march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard -mtune=cortex-a7 -D__ARM__
-ARCH_OPTS += --pipe -B$(RTEMS_ARCH_LIB2) -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems
+ARCH_OPTS ?= -march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard -mtune=cortex-a7
+ARCH_OPTS += --pipe -B$(RTEMS_ARCH_LIB) -qrtems
 ARCH_OPTS += -DHAVE_DLFCN_H=1 -DHAVE_RTEMS_PCI_H=1
 
 INCLUDE_PATH := -I./config
 
 WARNINGS	= -Wall
+# WARNINGS	= -Wall -Wmissing-prototypes -Wimplicit-function-declaration -Wstrict-prototypes -Wnested-externs
 DEBUG_OPTS	 = -g -O2
 
 ##
@@ -80,9 +81,6 @@ LIBS = -Wl,-Bstatic -Wl,-Bdynamic -lm -lz
 ##
 ## Optional libs depending on the features needed
 ##
-# LIBS += -lftpd
-# LIBS += -ltelnetd
-# LIBS += -lnfs
 
 ##
 ## Extra Cflags for Assembly listings, etc.
