@@ -22,6 +22,12 @@
 #define RKI_SHELL_INIT "/shell-init"
 
 /*
+** Include the Dynamic Loader commands
+** undef if your BSP does not support the loader
+*/
+#define RKI_INCLUDE_DL_CMDS
+
+/*
 ** Include support for the "regular" RAM disk
 */
 #define RKI_INCLUDE_RAMDISK

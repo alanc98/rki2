@@ -15,6 +15,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 
@@ -28,7 +29,6 @@
 #include <rtems/fsmount.h>
 #include <rtems/ramdisk.h>
 #include <rtems/shell.h>
-#include <rtems/nvdisk-sram.h>
 #ifdef RKI_INCLUDE_NFSCLIENT
    #include <librtemsNfs.h>
 #endif
@@ -158,7 +158,7 @@ int WriteTestCmd( int argc, char *argv[])
           }
 
           strncpy(file_name, volume_path, 32);
-          strncat(file_name, FILENAME_BASE, 32);
+          strncat(file_name, FILENAME_BASE, strlen(FILENAME_BASE) + 1);
           sprintf(file_num_string, "%4d", i%100);
           strncat(file_name, file_num_string, 5 );
           printf("File: %s\n",file_name);

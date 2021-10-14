@@ -25,7 +25,7 @@
 ** Include the Dynamic Loader commands
 ** undef if your BSP does not support the loader
 */
-#define RKI_INCLUDE_DL_CMDS
+#undef RKI_INCLUDE_DL_CMDS
 
 /*
 ** Include support for the "regular" RAM disk
@@ -36,7 +36,7 @@
 ** Define RAM Disk 0 base address and size
 */
 #define RAM_DISK_0_BASE_ADDR 0x0
-#define RAM_DISK_0_BLOCKS    128 * 1024
+#define RAM_DISK_0_BLOCKS    8192 
 
 /*
 ** Include the TAR file system to initialze IMFS

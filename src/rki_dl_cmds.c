@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <string.h>
-#include <dlfcn.h>
+
+#ifdef RKI_INCLUDE_DL_CMDS
+
 #include <rtems/shell.h>
 #include <rtems/rtl/dlfcn-shell.h>
+#include <dlfcn.h>
 #include <rtems/rtl/rap-shell.h>
 #include <rtems/rtl/rtl-shell.h>
 
@@ -81,3 +84,12 @@ void rki_add_dl_commands(void)
    rtems_shell_add_cmd("startcfedl","misc","Load and start the cFE Core",dl_load_and_start_cfe);
    
 }
+#else
+/*
+** no DL commands 
+*/
+void rki_add_dl_commands(void)
+{
+   return;
+}
+#endif

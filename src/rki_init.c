@@ -20,6 +20,8 @@
 #include <stdlib.h>
 #include "rki_config.h"
 #include "rtems_config.h"
+#include <rtems.h>
+#include <rtems/version.h>
 
 #ifdef RKI_INCLUDE_TARFS
    /*
