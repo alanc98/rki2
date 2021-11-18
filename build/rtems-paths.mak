@@ -6,6 +6,6 @@
 ## the BSPs that I build.
 ##
 ##
-RTEMS_TOOL_BASE ?= /home/alan/rtems/tools/6
-RTEMS_BSP_BASE ?= /home/alan/rtems/bsps/6
+RTEMS_TOOL_BASE ?= /opt/rtems6
+RTEMS_BSP_BASE ?= /opt/rtems6
 
