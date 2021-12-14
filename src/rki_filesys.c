@@ -1,5 +1,5 @@
 /*
- *  filesys.c 
+ *  rki_filesys.c 
  *
  * RTEMS Project (http://www.rtems.org/)
  *

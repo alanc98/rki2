@@ -1,5 +1,5 @@
 /*
- *  ramdisk.c
+ *  rki_ramdisk.c
  *
  * RTEMS Project (http://www.rtems.org/)
  *
