@@ -29,7 +29,7 @@ RTEMS_ARCH_LIB = $(RTEMS_PREFIX)/$(ARCH)/$(BSP)/lib
 ##
 LDFLAGS ?= -march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard -mtune=cortex-a7 
 LDFLAGS += --pipe -B$(RTEMS_ARCH_LIB) -qrtems $(WARNINGS) 
-# LDFLAGS += --pipe -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems $(WARNINGS) 
+# LDFLAGS += --pipe -B$(RTEMS_ARCH_LIB) -qrtems $(WARNINGS) 
 
 ##
 ## Compiler Architecture Switches
@@ -125,7 +125,7 @@ SIZE       = $(ARCH)-size
 ##
 ## RTEMS Specific host tools
 ##
-RTEMS_SYMS = rtems-syms
+RTEMS_SYMS = $(RTEMS_TOOL_BASE)/bin/rtems-syms
 
 ##
 ## VPATH

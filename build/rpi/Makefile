@@ -29,14 +29,14 @@ RTEMS_ARCH_LIB = $(RTEMS_PREFIX)/$(ARCH)/$(BSP)/lib
 ##
 LDFLAGS ?= -mcpu=arm1176jzf-s 
 LDFLAGS += --pipe -B$(RTEMS_ARCH_LIB) -qrtems $(WARNINGS) 
-# LDFLAGS += --pipe -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems $(WARNINGS) 
+# LDFLAGS += --pipe -B$(RTEMS_ARCH_LIB) -qrtems $(WARNINGS) 
 
 ##
 ## Compiler Architecture Switches
 ##
 ARCH_OPTS ?= -mcpu=arm1176jzf-s -D__ARM__  
 ARCH_OPTS += --pipe -B$(RTEMS_ARCH_LIB) -qrtems
-# ARCH_OPTS += --pipe -B$(RTEMS_ARCH_LIB) -specs bsp_specs -qrtems
+# ARCH_OPTS += --pipe -B$(RTEMS_ARCH_LIB) -qrtems
 ARCH_OPTS += -DHAVE_DLFCN_H=1 -DHAVE_RTEMS_PCI_H=1
 
 INCLUDE_PATH := -I./config
@@ -128,7 +128,7 @@ SIZE       = $(ARCH)-size
 ##
 ## RTEMS Specific host tools
 ##
-RTEMS_SYMS = rtems-syms
+RTEMS_SYMS = $(RTEMS_TOOL_BASE)/bin/rtems-syms
 
 ##
 ## VPATH

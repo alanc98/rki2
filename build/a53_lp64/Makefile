@@ -5,12 +5,12 @@
 ##
 ## Architecture Definition
 ##
-ARCH ?= microblaze-rtems6
+ARCH ?= aarch64-rtems6
 
 ##
 ## Select your BSP here
 ## 
-BSP ?= kcu105_qemu
+BSP ?= a53_lp64_qemu
 
 ##
 ## paths for the RTEMS tools and RTEMS BSP
@@ -25,21 +25,36 @@ RTEMS_PREFIX   = $(RTEMS_BSP_BASE)
 RTEMS_ARCH_LIB = $(RTEMS_PREFIX)/$(ARCH)/$(BSP)/lib
 
 ##
+## Paths to cFS artifacts
+##
+CPU_ID=cpu1
+CFS_BUILD_PATH = ../../../cFS-rtems6/build/exe/$(CPU_ID)
+CFS_APP_BUILD_PATH = $(CFS_BUILD_PATH)/nonvol
+CFE_CORE_OBJ = $(CFS_BUILD_PATH)/core-cpu1.exe
+
+##
+## Path to install cFS artifiacts
+##
+DYNOBJPATH = rootfs/nonvol
+
+##
 ## Linker flags
 ##
-LDFLAGS ?= -MMD -mlittle-endian -mno-xl-soft-div -mno-xl-soft-mul -Wl,-EL 
-LDFLAGS += --pipe -B$(RTEMS_ARCH_LIB) -qrtems $(WARNINGS) 
+LDFLAGS ?= -mcpu=cortex-a53
+LDFLAGS += -B$(RTEMS_ARCH_LIB) -qrtems $(WARNINGS)
 
 ##
 ## Compiler Architecture Switches
 ##
-ARCH_OPTS ?= -MMD -mlittle-endian -mno-xl-soft-div -mno-xl-soft-mul -Wl,-EL  -D__MB__  
+ARCH_OPTS ?=  -D__ARM__  
+ARCH_OPTS +=  -MMD -fdata-sections -ffunction-sections -mcpu=cortex-a53 
 ARCH_OPTS += --pipe -B$(RTEMS_ARCH_LIB) -qrtems
+ARCH_OPTS += -DHAVE_DLFCN_H=1 -DHAVE_RTEMS_PCI_H=1
 
 INCLUDE_PATH := -I./config
 
 WARNINGS	= -Wall
-DEBUG_OPTS      = -g -O0
+DEBUG_OPTS	 = -g -O2
 
 ##
 ## define build products
@@ -53,9 +68,8 @@ LINKSCRIPT       = linkcmds
 ##
 ## Objects to build
 ##
-OBJS = rki_init.o rki_shell_cmds.o rki_dl_cmds.o filesys.o deps.o
+OBJS = rki_init.o rki_shell_cmds.o rki_dl_cmds.o filesys.o 
 OBJS += target_shell_cmds.o
-
 
 ##
 ## Optional objects in src directory
@@ -71,9 +85,9 @@ OBJS += dhrystone_cmd.o
 OBJS += whetstone_cmd.o
 OBJS += benchmarks.o
 
-#
-# Target Specific Commands
-#
+##
+## Target Specific Commands
+##
 
 ##
 ## Libraries to link in
@@ -83,6 +97,9 @@ LIBS = -Wl,-Bstatic -Wl,-Bdynamic -Wl,--gc-sections -lm -lz
 ##
 ## Optional libs depending on the features needed
 ##
+# LIBS += -lftpd
+# LIBS += -ltelnetd
+# LIBS += -lnfs
 
 ##
 ## Extra Cflags for Assembly listings, etc.
@@ -135,7 +152,6 @@ RTEMS_SYMS = $(RTEMS_TOOL_BASE)/bin/rtems-syms
 VPATH := ./config
 VPATH += ../../src
 VPATH += ./src
-VPATH += ./src/drivers
 ###############################################################################################
 ##
 ## Build Targets
@@ -145,6 +161,7 @@ VPATH += ./src/drivers
 ## The default "make" target is the subsystem object module.
 ##
 default::$(EXE_TARGET)
+
 
 #  Install rule is mission/target specific
 #  install::$(EXE_TARGET)
@@ -166,21 +183,15 @@ default::$(EXE_TARGET)
 ##
 $(TAR_IMAGE)::
 	$(CD) rootfs; $(TAR) cf ../tarfile $(shell $(LS) rootfs)
-	$(LINKER) -r -EL --noinhibit-exec -o $(TAR_IMAGE) -b binary tarfile
+	$(LINKER) -r --noinhibit-exec -o $(TAR_IMAGE) -b binary tarfile
 
 ##
 ## Link Rule to make the final executable image
-## add symtab.o for symbol table
 ##
 $(EXE_TARGET): $(OBJS) $(TAR_IMAGE)
 	$(COMPILER) $(DEBUG_FLAGS) $(LDFLAGS) -o $(EXE_TARGET) $(OBJS) $(TAR_IMAGE) $(LIBS)
-	# The following link commands are used for generating the symbol tablex
-	# $(RTEMS_SYMS) -v -e -c "-mcpu=arm1176jzf-s -ffunction-sections -fdata-sections -Wl,--gc-sections" -o dl-sym.o $(EXE_TARGET_PRE)
-	# $(COMPILER) $(DEBUG_FLAGS) $(LDFLAGS) -o $(EXE_TARGET) $(OBJS) $(TAR_IMAGE) $(LIBS) dl-sym.o
 	$(OBJCOPY) -O binary --strip-all $(EXE_TARGET) $(BINARY_TARGET)
 	$(SIZE) $(EXE_TARGET)
-
-#       For BB/u-boot target
 #	gzip -9 $(BINARY_TARGET)
 #	mkimage -A arm -O linux -T kernel -a 0x80000000 -e 0x80000000 -n RTEMS -d $(BINARY_TARGET).gz $(BEAGLE_UBOOT)	
 
