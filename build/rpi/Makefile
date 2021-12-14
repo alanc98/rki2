@@ -56,22 +56,22 @@ LINKSCRIPT       = linkcmds
 ##
 ## Objects to build
 ##
-OBJS = rki_init.o rki_shell_cmds.o rki_dl_cmds.o filesys.o deps.o
+OBJS = rki_init.o rki_shell_cmds.o rki_dl_cmds.o rki_filesys.o deps.o
 OBJS += target_shell_cmds.o
 
 ##
 ## Optional objects in src directory
 ##
-OBJS += ramdisk.o
+OBJS += rki_ramdisk.o
 
 ##
 ## RTEMS examples / demos
 ##
-OBJS += task_cmd.o
-OBJS += hello_cmd.o
-OBJS += dhrystone_cmd.o
-OBJS += whetstone_cmd.o
-OBJS += benchmarks.o
+OBJS += rki_task_cmd.o
+OBJS += rki_hello_cmd.o
+OBJS += rki_dhrystone_cmd.o
+OBJS += rki_whetstone_cmd.o
+OBJS += rki_benchmarks.o
 
 ##
 ## Libraries to link in
