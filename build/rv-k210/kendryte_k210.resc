@@ -1,0 +1,35 @@
+using sysbus
+
+mach create
+machine LoadPlatformDescription @platforms/cpus/kendryte_k210.repl
+
+$ex=`machine SetSerialExecution True`
+
+showAnalyzer uart
+
+sysbus Tag <0x50440000 0x10000> "SYSCTL"
+sysbus Tag <0x50440018 0x4> "pll_lock" 0xFFFFFFFF
+sysbus Tag <0x5044000C 0x4> "pll1"
+sysbus Tag <0x50440008 0x4> "pll0"
+sysbus Tag <0x50440020 0x4> "clk_sel0"
+sysbus Tag <0x50440028 0x4> "clk_en_cent"
+sysbus Tag <0x5044002c 0x4> "clk_en_peri"
+
+# enable uart tx
+uart WriteDoubleWord 0x8 0x1
+
+macro reset
+"""
+    sysbus LoadELF @rki.elf
+#    sysbus LoadELF @ticker.exe
+#    sysbus LoadELF @smp08.exe
+"""
+
+runMacro $reset
+#    sysbus LoadELF @hello-ex2.exe
+#    sysbus LoadELF @smp08.exe
+#    sysbus LoadELF @rki.elf
+#     sysbus LoadELF @linpack.exe
+#    sysbus LoadELF @ticker.exe
+#    sysbus LoadELF @samples-hello.exe
+#    sysbus LoadELF @src-tree-hello.exe
