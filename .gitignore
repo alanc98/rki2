@@ -1,4 +1,5 @@
 *.o
+*.d
 *.lis
 *.elf
 *.bin
