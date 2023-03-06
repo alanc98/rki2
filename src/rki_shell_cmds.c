@@ -36,7 +36,7 @@ void shell_start ( void )
 
    printf ("Starting shell....\n\n");
 
-   sc = rtems_shell_init ("shell0", 20 * 1024, 100, "/dev/console", 0, 1,NULL);
+   sc = rtems_shell_init ("shell0", 64 * 1024, 100, "/dev/console", 0, 1,NULL);
    if (sc != RTEMS_SUCCESSFUL)
    {
       printf ("error: starting shell: %s (%d)\n", rtems_status_text(sc), sc);

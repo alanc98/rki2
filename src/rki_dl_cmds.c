@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include "rki_config.h"
 
 #ifdef RKI_INCLUDE_DL_CMDS
 
@@ -9,12 +10,13 @@
 #include <rtems/rtl/rap-shell.h>
 #include <rtems/rtl/rtl-shell.h>
 
+#define TASK_ATTRIBUTES RTEMS_FLOATING_POINT
+
 typedef void (*call_t)(void);
 
-/*
-** Dynamic load command 
-*/
-int dl_load_and_start_cfe( int argc, char *argv[])
+rtems_task LaunchCfs(
+  rtems_task_argument unused
+)
 {
    void*  handle;
    call_t call;
@@ -22,11 +24,11 @@ int dl_load_and_start_cfe( int argc, char *argv[])
    int    unresolved;
    char*  message = "loaded";
 
-   handle = dlopen ("/cf/apps/cfe-core.o", RTLD_NOW | RTLD_GLOBAL);
+   handle = dlopen ("/nonvol/core-cpu1.exe", RTLD_NOW | RTLD_GLOBAL);
    if (!handle)
    {
      printf("dlopen failed: %s\n", dlerror());
-     return 1;
+     rtems_task_delete( RTEMS_SELF );    /* should not return */
    }
 
    if (dlinfo (handle, RTLD_DI_UNRESOLVED, &unresolved) < 0)
@@ -39,32 +41,51 @@ int dl_load_and_start_cfe( int argc, char *argv[])
    }
    printf ("handle: %p %s\n", handle, message);
 
-   call = dlsym (handle, "goCFE");
+   call = dlsym (handle, "OS_BSPMain");
    if (call == NULL)
    {
-     printf("dlsym failed: symbol start_cfe not found\n");
-     return 1;
+     printf("dlsym failed: symbol OS_BSPMain not found\n");
+     rtems_task_delete( RTEMS_SELF );    /* should not return */
    }
    else
    {
-      printf("dlsym OK: symbol start_cfe found\n");
+      printf("dlsym OK: symbol OS_BSPMain found\n");
    }
 
 #if 1
    call ();
 #endif
 
-#if 0
-   if (dlclose (handle) < 0)
+   printf( "*** CFS TASK FINISHED ***\n");
+   rtems_task_delete( RTEMS_SELF );    /* should not return */
+}
+
+/*
+** Dynamic load command 
+*/
+int dl_load_and_start_cfe( int argc, char *argv[])
+{
+   rtems_id          task_id;
+   rtems_name        task_name;
+   rtems_status_code status;
+
+   task_name = rtems_build_name( 'c', 'F', 'S', ' ' );
+
+   status = rtems_task_create(
+    task_name, 100, RTEMS_MINIMUM_STACK_SIZE * 4, RTEMS_DEFAULT_MODES,
+    TASK_ATTRIBUTES, &task_id
+   );
+   if ( status != RTEMS_SUCCESSFUL )
    {
-     printf("dlclose failed: %s\n", dlerror());
-     return 1;
+      printf("Error creating cFS Task\n");
    }
 
-   printf ("handle: %p closed\n", handle);
-#endif
-
-   return(call_ret);
+   status = rtems_task_start( task_id, LaunchCfs, 0 );
+   if ( status != RTEMS_SUCCESSFUL )
+   {
+      printf("Error Starting cFS Task\n");
+   }
+   return(status);
 }
 
 /*

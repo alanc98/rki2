@@ -19,9 +19,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "rki_config.h"
-#include "rtems_config.h"
 #include <rtems.h>
 #include <rtems/version.h>
+
+#if 0
+/* when using greth/amba plug and play, this is included
+ * in the rki_network.c file
+ */
+#include "rtems_config.h"
+#endif
 
 #ifdef RKI_INCLUDE_TARFS
    /*
@@ -39,6 +45,7 @@
 int  rki_init_libbsd( void );
 int  rki_add_local_cmds(void);
 int  rki_setup_filesystems (void);
+int  rki_init_network(void);
 void rki_start_network_services(void);
 
 /*
@@ -79,6 +86,10 @@ rtems_task Init (rtems_task_argument ignored)
 
 #ifdef RKI_INCLUDE_LIBBSD
    status = rki_init_libbsd();
+#endif
+
+#ifdef RKI_INCLUDE_NETWORK
+   status = rki_init_network();
 #endif
 
 #ifdef RKI_INCLUDE_NETWORK_SERVICES

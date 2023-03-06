@@ -6,6 +6,8 @@
 ## the BSPs that I build.
 ##
 ##
-RTEMS_TOOL_BASE ?= /opt/rtems6
-RTEMS_BSP_BASE ?= /opt/rtems6
+# RTEMS_TOOL_BASE ?= /opt/rcc-1.3.1-gcc
+# RTEMS_BSP_BASE ?= /opt/Tools/rcc-1.3.1-gcc
+RTEMS_TOOL_BASE ?= $(HOME)/Tools/rcc-1.3.1-gcc
+RTEMS_BSP_BASE ?= $(HOME)/Tools/rcc-1.3.1-gcc
 
