@@ -18,12 +18,12 @@
 /*
 ** External functions
 */
-
+int fb_command( int argc, char *argv[]);
 /*
 ** function to start the shell and add new commands.
 */
 void rki_add_target_cmds(void)
 {
    printf("Adding Target specific commands\n");
-
+   rtems_shell_add_cmd("fb","misc","RPI4b Framebuffer test",fb_command);
 }
