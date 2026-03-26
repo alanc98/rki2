@@ -20,6 +20,7 @@
 */
 
 int  hello_command( int argc, char *argv[]);
+int  rki_start_cfs_command(int argc, char *argv[]);
 int  task_command( int argc, char *argv[]);
 int  dhrystone_command( int argc, char *argv[]);
 int  whetstone_command( int argc, char *argv[]);
@@ -82,6 +83,10 @@ int rki_add_local_cmds(void)
    rtems_shell_add_cmd("dhrystone","misc","Run the Dhrystone Benchmark",dhrystone_command);
 
    rtems_shell_add_cmd("whetstone","misc","Run the Whetstone Benchmark",whetstone_command);
+
+#ifdef RKI_INCLUDE_STATIC_CFS
+   rtems_shell_add_cmd("startcfs","misc","Start cFS (static)",rki_start_cfs_command);
+#endif
 
    /*
    ** Add the target specific commands
